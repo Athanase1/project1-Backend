@@ -10,7 +10,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "https://athanase1.github.io/resto-littlelemon/",
+    origin: "https://athanase1.github.io",
     credentials: true
 }));
 
