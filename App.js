@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors"
 import dotenv from "dotenv";
 import route from "./routes/auth.js";
+import route1 from "./routes/reservation.js"
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -10,7 +11,7 @@ const app = express();
 app.use(cookieParser());
 
 app.use(cors({
-    origin: "https://athanase1.github.io",
+   origin: "https://athanase1.github.io",
     credentials: true
 }));
 
@@ -21,6 +22,7 @@ mongoose.connect(process.env.MONGO_URL)
 .catch(err => console.log(err.message));
 
 app.use('/api/users', route);
+app.use('/api/users', route1)
 
 const PORT = process.env.PORT || 5000;
 

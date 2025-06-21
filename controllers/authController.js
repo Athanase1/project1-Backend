@@ -40,6 +40,7 @@ export const connexion = async (req, res) => {
                 id: utilisateur._id,
                 nom: utilisateur.nom,
                 prenom: utilisateur.prenom,
+                tel:utilisateur.tel,
                 email: utilisateur.email,
             },
         });
