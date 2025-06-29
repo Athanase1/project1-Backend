@@ -1,6 +1,6 @@
 import Reservation from "../models/Reservation.js";
 import ReservationDetail from "../models/DetailReservation.js";
-export const reserver = async (res, req) =>{
+export const reserver = async ( req,res) =>{
     try{
       const {date, nbPersonnes,occasion,heure,nom,prenom,tel,email} = req.body
         const reservation = new Reservation({
