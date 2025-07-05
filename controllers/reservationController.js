@@ -1,6 +1,6 @@
 import Reservation from "../models/Reservation.js";
 import ReservationDetail from "../models/DetailReservation.js";
-import DetailReservation from "../models/DetailReservation.js";
+
 export const reserver = async ( req,res) =>{
     try{
       const {date, nbPersonnes,occasion,heure,nom,prenom,tel,email} = req.body
@@ -14,7 +14,7 @@ export const reserver = async ( req,res) =>{
         await reservation.save();
 
       const detail = new ReservationDetail({
-          id_reservation : tel,
+          id_reservation:tel,
           nom,
           prenom,
           tel,
@@ -39,7 +39,7 @@ export const trouver = async (req, res) => {
             return res.status(400).json({ message: "Email manquant dans la requête." });
         }
 
-        const reservations = await Reservation.find({ tel });
+        const reservations = await ReservationDetail.find({ tel });
 
         if (reservations.length === 0) {
             return res.status(404).json({
