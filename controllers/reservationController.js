@@ -21,21 +21,9 @@ export const reserver = async ( req,res) =>{
           email,
       })
         await detail.save()
-      res.status(200).json({
+
+        res.status(200).json({
           message:"Reservation confirmé avec succèss!",
-          reservation:{
-              date,
-              nbPersonnes,
-              occasion,
-              heure,
-          },
-          detail:{
-              id_reservation,
-              nom,
-              prenom,
-              tel,
-              email
-          }
       })
     } catch (e) {
         res.status(500).json({
