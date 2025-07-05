@@ -50,7 +50,7 @@ export const trouver = async (req, res) => {
         const details = await ReservationDetail.find({ tel }).populate("id_reservation");
 
         if (details.length === 0) {
-            return res.status(404).json({
+            return res.status(200).json({
                 message: "Aucune réservation liée à ce numéro.",
             });
         }
