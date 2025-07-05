@@ -1,87 +1,73 @@
 import Reservation from "../models/Reservation.js";
 import ReservationDetail from "../models/DetailReservation.js";
 
-export const reserver = async ( req,res) =>{
-    try{
-      const {date, nbPersonnes,occasion,heure,nom,prenom,tel,email} = req.body
+export const reserver = async (req, res) => {
+    try {
+        const { date, nbPersonnes, occasion, heure, nom, prenom, tel, email } = req.body;
+
+        // Créer la réservation principale
         const reservation = new Reservation({
             date,
             nbPersonnes,
             occasion,
             heure,
-        })
+        });
 
         await reservation.save();
 
-      const detail = new ReservationDetail({
-          id_reservation:tel,
-          nom,
-          prenom,
-          tel,
-          email,
-      })
-        await detail.save()
+        // Créer les détails liés à la réservation
+        const detail = new ReservationDetail({
+            id_reservation: reservation._id, // on lie avec l'ObjectId correct
+            nom,
+            prenom,
+            tel,
+            email,
+        });
+
+        await detail.save();
 
         res.status(200).json({
-          message:"Reservation confirmée avec succèss!",
-      })
+            message: "Réservation confirmée avec succès !",
+            reservation,
+            detail,
+        });
+
     } catch (e) {
+        console.error("Erreur lors de la réservation :", e);
         res.status(500).json({
-            message:"Erreur du serveur ressayez à nouveau!"
-        })
+            message: "Erreur du serveur, réessayez à nouveau !",
+        });
     }
-}
+};
 export const trouver = async (req, res) => {
     try {
         const { tel } = req.query;
 
         if (!tel) {
-            return res.status(400).json({ message: "Email manquant dans la requête." });
+            return res.status(400).json({ message: "Numéro de téléphone manquant." });
         }
 
-        const reservations = await ReservationDetail.find({ tel });
+        const details = await ReservationDetail.find({ tel }).populate("id_reservation");
 
-        if (reservations.length === 0) {
+        if (details.length === 0) {
             return res.status(404).json({
-                message: "Aucune réservation liée à cet numéro de tel.",
-            });
-        }
-
-        res.status(200).json({
-            reservations,
-            message: "Voici la liste des réservations liées à cet num de tel.",
-        });
-
-    } catch (e) {
-        console.error("Erreur lors de la recherche de réservations :", e);
-        res.status(500).json({
-            message: "Erreur du serveur, veuillez réessayer.",
-        });
-    }
-};
-export const supprimer = async (req, res) => {
-    try {
-        const { id } = req.body;
-
-        const deleted = await Reservation.findByIdAndDelete(id);
-
-        if (!deleted) {
-            return res.status(404).json({
-                message: "Réservation non trouvée.",
+                message: "Aucune réservation liée à ce numéro.",
             });
         }
 
         return res.status(200).json({
-            message: "Réservation supprimée avec succès.",
+            reservations: details,
+            message: "Liste des réservations avec détails.",
         });
 
     } catch (e) {
-        console.error("Erreur de suppression :", e.message);
-        res.status(500).json({
-            message: "Erreur lors de la suppression !",
+        console.error("Erreur lors de la recherche :", e);
+        return res.status(500).json({
+            message: "Erreur serveur.",
         });
     }
 };
+
 export const modifier = async (req, res) => {
     try {
         const {
@@ -107,8 +93,8 @@ export const modifier = async (req, res) => {
             return res.status(404).json({ message: "Réservation non trouvée." });
         }
 
-        // Mise à jour des détails si tu as un modèle ReservationDetail lié
-        await ReservationDetail.findOneAndUpdate(
+        // Mise à jour des détails associés
+        const details = await ReservationDetail.findOneAndUpdate(
             { id_reservation: id },
             { nom, prenom, tel, email },
             { new: true }
@@ -117,6 +103,7 @@ export const modifier = async (req, res) => {
         res.status(200).json({
             message: "Réservation mise à jour avec succès.",
             reservation,
+            details,
         });
     } catch (e) {
         console.error("Erreur de modification :", e.message);
@@ -125,3 +112,4 @@ export const modifier = async (req, res) => {
         });
     }
 };
+
