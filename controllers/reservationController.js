@@ -43,26 +43,34 @@ export const reserver = async ( req,res) =>{
         })
     }
 }
-export const trouver = async (req,res) =>{
-    try{
-        const {tel} = req.body
-        const reservations = await Reservation.find(tel)
-        if(!reserve){
-            res.status(500).json({
-                message:"Aucun reservations liées à cette email!"
-            })
-        }
-      res.status(200).json({
-          reservations,
-          message:"voici la listes des reservations"
-      })
+export const trouver = async (req, res) => {
+    try {
+        const { email } = req.body;
 
-    }catch (e) {
+        if (!email) {
+            return res.status(400).json({ message: "Email manquant dans la requête." });
+        }
+
+        const reservations = await Reservation.find({ email });
+
+        if (reservations.length === 0) {
+            return res.status(404).json({
+                message: "Aucune réservation liée à cet email.",
+            });
+        }
+
+        res.status(200).json({
+            reservations,
+            message: "Voici la liste des réservations liées à cet email.",
+        });
+
+    } catch (e) {
+        console.error("Erreur lors de la recherche de réservations :", e);
         res.status(500).json({
-            message:"Erreur du serveur veillez ressayer!"
-        })
+            message: "Erreur du serveur, veuillez réessayer.",
+        });
     }
-}
+};
 export const supprimer = async (req, res) => {
     try {
         const { id } = req.body;
