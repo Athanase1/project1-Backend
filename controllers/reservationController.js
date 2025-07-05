@@ -1,5 +1,6 @@
 import Reservation from "../models/Reservation.js";
 import ReservationDetail from "../models/DetailReservation.js";
+import DetailReservation from "../models/DetailReservation.js";
 export const reserver = async ( req,res) =>{
     try{
       const {date, nbPersonnes,occasion,heure,nom,prenom,tel,email} = req.body
@@ -11,7 +12,7 @@ export const reserver = async ( req,res) =>{
         })
 
         await reservation.save();
-      const id_reservation = reservation._id.toString();
+      const id_reservation = reservation.tel.toString();
       const detail = new ReservationDetail({
           id_reservation,
           nom,
@@ -39,6 +40,26 @@ export const reserver = async ( req,res) =>{
     } catch (e) {
         res.status(500).json({
             message:"Erreur du serveur ressayez à nouveau!"
+        })
+    }
+}
+export const trouver = async (req,res) =>{
+    try{
+        const {tel} = req.body
+        const reservations = await Reservation.find(tel)
+        if(!reserve){
+            res.status(500).json({
+                message:"Aucun reservations liées à cette email!"
+            })
+        }
+      res.status(200).json({
+          reservations,
+          message:"voici la listes des reservations"
+      })
+
+    }catch (e) {
+        res.status(500).json({
+            message:"Erreur du serveur veillez ressayer!"
         })
     }
 }
