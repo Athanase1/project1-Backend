@@ -23,7 +23,7 @@ export const reserver = async ( req,res) =>{
         await detail.save()
 
         res.status(200).json({
-          message:"Reservation confirmé avec succèss!",
+          message:"Reservation confirmée avec succèss!",
       })
     } catch (e) {
         res.status(500).json({
@@ -33,23 +33,23 @@ export const reserver = async ( req,res) =>{
 }
 export const trouver = async (req, res) => {
     try {
-        const { email } = req.body;
+        const { tel } = req.body;
 
-        if (!email) {
+        if (!tel) {
             return res.status(400).json({ message: "Email manquant dans la requête." });
         }
 
-        const reservations = await Reservation.find({ email });
+        const reservations = await Reservation.find({ tel });
 
         if (reservations.length === 0) {
             return res.status(404).json({
-                message: "Aucune réservation liée à cet email.",
+                message: "Aucune réservation liée à cet numéro de tel.",
             });
         }
 
         res.status(200).json({
             reservations,
-            message: "Voici la liste des réservations liées à cet email.",
+            message: "Voici la liste des réservations liées à cet num de tel.",
         });
 
     } catch (e) {
