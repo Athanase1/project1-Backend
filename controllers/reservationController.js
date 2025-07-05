@@ -33,7 +33,7 @@ export const reserver = async ( req,res) =>{
 }
 export const trouver = async (req, res) => {
     try {
-        const { tel } = req.body;
+        const { tel } = req.query;
 
         if (!tel) {
             return res.status(400).json({ message: "Email manquant dans la requête." });
