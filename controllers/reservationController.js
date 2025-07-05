@@ -12,9 +12,9 @@ export const reserver = async ( req,res) =>{
         })
 
         await reservation.save();
-      const id_reservation = reservation.tel.toString();
+
       const detail = new ReservationDetail({
-          id_reservation,
+          id_reservation : tel,
           nom,
           prenom,
           tel,
@@ -22,7 +22,7 @@ export const reserver = async ( req,res) =>{
       })
         await detail.save()
       res.status(200).json({
-          message:"Rerservation confirmé avec succèss",
+          message:"Reservation confirmé avec succèss!",
           reservation:{
               date,
               nbPersonnes,
