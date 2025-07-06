@@ -76,11 +76,11 @@ export const modifier = async (req, res) => {
             nbPersonnes,
             occasion,
             heure,
-            nom,
-            prenom,
-            tel,
-            email,
         } = req.body;
+        // vérification;
+        if (!id || !date || !nbPersonnes || !occasion || !heure) {
+            return res.status(400).json({ message: "Champs manquants pour la mise à jour." });
+        }
 
         // Mise à jour de la réservation principale
         const reservation = await Reservation.findByIdAndUpdate(
@@ -92,18 +92,10 @@ export const modifier = async (req, res) => {
         if (!reservation) {
             return res.status(404).json({ message: "Réservation non trouvée." });
         }
-
-        // Mise à jour des détails associés
-        const details = await ReservationDetail.findOneAndUpdate(
-            { id_reservation: id },
-            { nom, prenom, tel, email },
-            { new: true }
-        );
-
         res.status(200).json({
             message: "Réservation mise à jour avec succès.",
             reservation,
-            details,
+
         });
     } catch (e) {
         console.error("Erreur de modification :", e.message);
