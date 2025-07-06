@@ -112,4 +112,33 @@ export const modifier = async (req, res) => {
         });
     }
 };
+export const supprimer = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ message: "ID de réservation manquant." });
+        }
+
+        // Supprimer la réservation principale
+        const deletedReservation = await Reservation.findByIdAndDelete(id);
+
+        if (!deletedReservation) {
+            return res.status(404).json({ message: "Réservation non trouvée." });
+        }
+
+        // Supprimer les détails liés à cette réservation
+        await ReservationDetail.deleteOne({ id_reservation: id });
+
+        return res.status(200).json({
+            message: "Réservation et ses détails supprimés avec succès.",
+        });
+
+    } catch (e) {
+        console.error("Erreur lors de la suppression :", e);
+        return res.status(500).json({
+            message: "Erreur du serveur lors de la suppression.",
+        });
+    }
+};
 
