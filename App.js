@@ -9,12 +9,22 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 const app = express();
 app.use(cookieParser());
+const allowedOrigins = [
+    "http://localhost:3000",
+    "https://athanase1.github.io",
+];
 
-app.use(cors({
-   origin: "https://athanase1.github.io",
-    credentials: true
-}));
-
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
+    credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URL)
