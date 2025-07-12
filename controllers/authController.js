@@ -119,7 +119,14 @@ export const refreshToken = (req, res) => {
         res.status(200).json({ token: newAccessToken });
     });
 };
-
+export const logout = (req, res) => {
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: process.env.NODE_ENV === "production"
+    });
+    res.status(200).json({ message: "Déconnecté avec succès" });
+};
 export const supprimerUtilisateur = async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
