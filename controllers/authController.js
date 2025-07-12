@@ -45,7 +45,6 @@ export const connexion = async (req, res) => {
             },
         });
     } catch (err) {
-        console.log("Erreur connexion :", err);
         res.status(500).json({ message: "erreur du serveur" });
     }
 };
@@ -97,7 +96,6 @@ export const inscription = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Erreur lors de l'inscription :", error);
         res.status(500).json({ message: "Erreur lors de l'inscription" });
     }
 };
