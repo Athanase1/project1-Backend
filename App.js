@@ -31,8 +31,8 @@ mongoose.connect(process.env.MONGO_URL)
 .then(() => console.log("MonGODB connecté"))
 .catch(err => console.log(err.message));
 
-app.use('/api/users', route);
-app.use('/api/users', route1)
+app.use('/api/users', route); // authentification
+app.use('/api/reservations', route1) // reservations
 
 const PORT = process.env.PORT || 5000;
 

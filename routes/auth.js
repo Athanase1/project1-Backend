@@ -6,7 +6,7 @@ import { verifyToken } from "../middlewares/authMiddleware.js";
 router.post("/inscription", inscription);
 router.post("/connexion", connexion);
 router.get("/refresh", refreshToken);
-router.get("/logout", logout)
+router.post("/logout", logout)
 router.delete("/supprimer", supprimerUtilisateur)
 
 // Exemple route protégée
