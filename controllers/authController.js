@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../models/Users.js";
 import bcrypt from "bcrypt";
+import {transporteur} from "../services/mailService.js";
 
 export const connexion = async (req, res) => {
     try {
@@ -95,6 +96,67 @@ export const inscription = async (req, res) => {
                 email: nouvelUtilisateur.email,
             },
         });
+        const html =`
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bienvenue chez Little Lemon</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; color: #333;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px;">
+    <tr>
+      <td align="center">
+        <table width="100%" style="max-width: 600px; background-color: white; border-radius: 8px; padding: 20px;">
+          <tr>
+            <td style="text-align: center;">
+              <h2 style="color: #4CAF50;">Bienvenue chez Little Lemon, ${prenom} !</h2>
+              <p style="font-size: 16px;">Nous sommes ravis de vous compter parmi nos membres.</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              <p>🍋 En créant votre compte, vous pouvez désormais :</p>
+              <ul style="list-style: none; padding: 0; line-height: 1.6;">
+                <li>✅ Réserver une table facilement</li>
+                <li>✅ Gérer vos réservations</li>
+                <li>✅ Recevoir des offres exclusives</li>
+              </ul>
+              <p style="margin-top: 20px;">Nous espérons vous voir bientôt dans notre restaurant !</p>
+              <p style="font-weight: bold;">– L’équipe de Little Lemon 🍋</p>
+            </td>
+          </tr>
+        </table>
+
+        <table width="100%" style="max-width: 600px; margin-top: 20px;">
+          <tr>
+            <td align="center" style="font-size: 12px; color: #888;">
+              <p style="margin: 5px;">&copy; Little Lemon ${new Date().getFullYear()}. Tous droits réservés.</p>
+              <a href="https://tonsite.com" target="_blank" style="color: #888; text-decoration: none;">www.tonsite.com</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`
+
+        try{
+            transporteur.sendMail({
+                from:`"Restaurant little lemon" <${process.env.MAIL_USER}>`,
+                to:email,
+                subject:"Création de compte",
+                html:html,
+            })
+        }catch (e) {
+           res.status(200).json({
+               message:"Erreur d'envoie de courriel"
+           })
+        }
     } catch (error) {
         res.status(500).json({ message: "Erreur lors de l'inscription" });
     }
@@ -106,7 +168,7 @@ export const refreshToken = (req, res) => {
     if (!refresh) return res.status(401).json({ message: "Token manquant" });
 
     jwt.verify(refresh, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
-        if (err) return res.status(403).json({ message: "Token invalide" });
+        if (err) return res.status(401).json({ message: "Token invalide" });
 
         const newAccessToken = jwt.sign(
             { id: decoded.id },
