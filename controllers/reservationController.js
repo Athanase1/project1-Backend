@@ -6,7 +6,13 @@ export const reserver = async (req, res) => {
     try {
         const { date, nbPersonnes, occasion, heure, nom, prenom, tel, email } = req.body;
 
-        // Créer la réservation principale
+        if (!date || !nbPersonnes || !occasion || !heure || !nom || !prenom || !tel || !email) {
+            return res.status(400).json({
+                success: false,
+                message: "Info manquante",
+            });
+        }
+
         const reservation = new Reservation({
             date,
             nbPersonnes,
@@ -16,15 +22,13 @@ export const reserver = async (req, res) => {
 
         await reservation.save();
 
-        // Créer les détails liés à la réservation
         const detail = new ReservationDetail({
-            id_reservation: reservation._id, // on lie avec l'ObjectId correct
+            id_reservation: reservation._id,
             nom,
             prenom,
             tel,
             email,
         });
-
 
         await detail.save();
         const html =  `
