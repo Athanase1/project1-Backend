@@ -135,7 +135,7 @@ export const inscription = async (req, res) => {
           <tr>
             <td align="center" style="font-size: 12px; color: #888;">
               <p style="margin: 5px;">&copy; Little Lemon ${new Date().getFullYear()}. Tous droits réservés.</p>
-              <a href="https://tonsite.com" target="_blank" style="color: #888; text-decoration: none;">www.tonsite.com</a>
+              <a href="https://athanase1.github.io/resto-littlelemon/" target="_blank" style="color: #888; text-decoration: none;">www.littleLemon.com</a>
             </td>
           </tr>
         </table>
