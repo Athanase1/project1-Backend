@@ -94,6 +94,7 @@ export const inscription = async (req, res) => {
                 nom: nouvelUtilisateur.nom,
                 prenom: nouvelUtilisateur.prenom,
                 email: nouvelUtilisateur.email,
+                tel:nouvelUtilisateur.tel,
             },
         });
         const html =`
