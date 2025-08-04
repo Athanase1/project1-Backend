@@ -188,15 +188,12 @@ export const supprimer = async (req, res) => {
         if (!id) {
             return res.status(400).json({ message: "ID de réservation manquant." });
         }
+        const res = await  Reservation.findOne({id})
 
-        // Supprimer la réservation principale
-        const deletedReservation = await Reservation.findByIdAndDelete(id);
-
-        if (!deletedReservation) {
-            return res.status(404).json({ message: "Réservation non trouvée." });
-        }
         const resDet = await ReservationDetail.findOne({ id_reservation: id });
-
+        if (!res || !res.date) {
+            return res.status(404).json({ message: "Reservation non trouvée" });
+        }
         if (!resDet || !resDet.email) {
             return res.status(404).json({ message: "Détail de réservation ou email introuvable." });
         }
@@ -215,7 +212,7 @@ export const supprimer = async (req, res) => {
         <table width="100%" style="max-width: 600px; background-color: white; border-radius: 8px; padding: 20px; width: 100%">
           <tr>
             <td style="text-align: center;">
-              <h1>Votre reservation du ${resDet.date} est annulée!</h1>
+              <h1>Votre reservation du ${res.date} est annulée!</h1>
               <a href="https://athanase1.github.io/resto-littlelemon/#/reservation" style="margin-top: 5px; width: fit-content; height: fit-content; padding: 1rem; background-color: black; color: aliceblue; border-radius: 20px">Nouvelle reservation</a>
             </td>
           </tr>
@@ -254,10 +251,13 @@ export const supprimer = async (req, res) => {
                 message:"Erreur lors d'envoie de courriel"
             })
         }
+        // Supprimer la réservation principale
+        const deletedReservation = await Reservation.findByIdAndDelete(id);
+        if (!deletedReservation) {
+            return res.status(404).json({ message: "Réservation non trouvée." });
+        }
         // Supprimer les détails liés à cette réservation
-      const detailRes =  await ReservationDetail.deleteOne({ id_reservation: id });
-
-
+      await ReservationDetail.deleteOne({ id_reservation: id });
         return res.status(200).json({
             message: "Réservation et ses détails supprimés avec succès.",
         });
