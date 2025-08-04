@@ -195,21 +195,22 @@ export const supprimer = async (req, res) => {
         if (!deletedReservation) {
             return res.status(404).json({ message: "Réservation non trouvée." });
         }
-
-        // Supprimer les détails liés à cette réservation
-      const detailRes =  await ReservationDetail.deleteOne({ id_reservation: id });
+        const resDet = await  ReservationDetail.find({id_reservation: id})
         try {
             transporteur.sendMail({
                 from:`"Restaurant LittleLemon" <${process.env.MAIL_USER}>`,
-                to:detailRes.email,
+                to:resDet.email,
                 subject:"Reservation",
                 message:"Reservation annulée avec succès!"
             })
         }catch (e) {
-           return  res.status(500).json({
-               message:"Erreur lors d'envoie de courriel"
-           })
+            return  res.status(500).json({
+                message:"Erreur lors d'envoie de courriel"
+            })
         }
+        // Supprimer les détails liés à cette réservation
+      const detailRes =  await ReservationDetail.deleteOne({ id_reservation: id });
+
 
         return res.status(200).json({
             message: "Réservation et ses détails supprimés avec succès.",
