@@ -188,46 +188,49 @@ export const supprimer = async (req, res) => {
         if (!id) {
             return res.status(400).json({ message: "ID de réservation manquant." });
         }
-        const res = await  Reservation.findOne({id})
 
+        const reservation = await Reservation.findOne({ id });
         const resDet = await ReservationDetail.findOne({ id_reservation: id });
-        if (!res || !res.date) {
-            return res.status(404).json({ message: "Reservation non trouvée" });
+
+        if (!reservation || !reservation.date) {
+            return res.status(404).json({ message: "Réservation non trouvée." });
         }
+
         if (!resDet || !resDet.email) {
             return res.status(404).json({ message: "Détail de réservation ou email introuvable." });
         }
-        const html =  `
+
+        const html = `
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Annulation de reservation!</title>
+  <title>Annulation de réservation!</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; color: #333;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px; width: 100%;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding: 20px;">
     <tr>
       <td align="center">
-        <table width="100%" style="max-width: 600px; background-color: white; border-radius: 8px; padding: 20px; width: 100%">
+        <table style="max-width: 600px; background-color: white; border-radius: 8px; padding: 20px; width: 100%;">
           <tr>
             <td style="text-align: center;">
-              <h1>Votre reservation du ${res.date} est annulée!</h1>
-              <a href="https://athanase1.github.io/resto-littlelemon/#/reservation" style="margin-top: 5px; width: fit-content; height: fit-content; padding: 1rem; background-color: black; color: aliceblue; border-radius: 20px">Nouvelle reservation</a>
+              <h1>Votre réservation du ${reservation.date} est annulée!</h1>
+              <a href="https://athanase1.github.io/resto-littlelemon/#/reservation" style="margin-top: 5px; padding: 1rem; background-color: black; color: aliceblue; border-radius: 20px; display: inline-block;">Nouvelle réservation</a>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 20px;">
-              <p style="margin: 0;">Contactez-nous à tout moment ou rendez-vous sur notre site pour modifition ou questions</p>
+              <p>Contactez-nous à tout moment ou rendez-vous sur notre site pour modification ou questions.</p>
               <p style="margin-top: 10px;">Au plaisir de vous accueillir !</p>
               <p style="font-weight: bold;">– L’équipe de Little Lemon 🍋</p>
             </td>
           </tr>
         </table>
 
-        <table width="100%" style="max-width: 600px; margin-top: 20px; width: 100%">
+        <table style="max-width: 600px; margin-top: 20px; width: 100%;">
           <tr>
-            <td style="font-size: 12px; color: #888; text-align: center">
+            <td style="font-size: 12px; color: #888; text-align: center;">
               <p style="margin: 5px;">&copy; Little Lemon ${new Date().getFullYear()}. Tous droits réservés.</p>
               <a href="https://athanase1.github.io/resto-littlelemon/" target="_blank" style="color: #888; text-decoration: none;">www.littleLemon.com</a>
             </td>
@@ -238,30 +241,33 @@ export const supprimer = async (req, res) => {
   </table>
 </body>
 </html>
-`
+        `;
+
         try {
-            transporteur.sendMail({
-                from:`"Restaurant LittleLemon" <${process.env.MAIL_USER}>`,
-                to:resDet.email,
-                subject:"Reservation",
-                html:html,
-            })
-        }catch (e) {
-            return  res.status(500).json({
-                message:"Erreur lors d'envoie de courriel"
-            })
+            await transporteur.sendMail({
+                from: `"Restaurant LittleLemon" <${process.env.MAIL_USER}>`,
+                to: resDet.email,
+                subject: "Annulation de réservation",
+                html: html,
+            });
+        } catch (e) {
+            return res.status(500).json({
+                message: "Erreur lors de l'envoi de l'e-mail.",
+            });
         }
+
         // Supprimer la réservation principale
-        const deletedReservation = await Reservation.findByIdAndDelete(id);
-        if (!deletedReservation) {
-            return res.status(404).json({ message: "Réservation non trouvée." });
+        const deletedReservation = await Reservation.deleteOne({ id });
+        if (deletedReservation.deletedCount === 0) {
+            return res.status(404).json({ message: "Réservation introuvable pour suppression." });
         }
+
         // Supprimer les détails liés à cette réservation
-      await ReservationDetail.deleteOne({ id_reservation: id });
+        await ReservationDetail.deleteOne({ id_reservation: id });
+
         return res.status(200).json({
             message: "Réservation et ses détails supprimés avec succès.",
         });
-
 
     } catch (e) {
         console.error("Erreur lors de la suppression :", e);
