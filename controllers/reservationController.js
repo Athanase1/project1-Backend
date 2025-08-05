@@ -257,7 +257,7 @@ export const supprimer = async (req, res) => {
         }
 
         // Supprimer la réservation principale
-        const deletedReservation = await Reservation.deleteOne({ id });
+        const deletedReservation = await Reservation.deleteOne({_id:id });
         if (deletedReservation.deletedCount === 0) {
             return res.status(404).json({ message: "Réservation introuvable pour suppression." });
         }
