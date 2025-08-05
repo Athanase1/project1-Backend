@@ -189,7 +189,7 @@ export const supprimer = async (req, res) => {
             return res.status(400).json({ message: "ID de réservation manquant." });
         }
 
-        const reservation = await Reservation.findOne({ id });
+        const reservation = await Reservation.findOne({_id:id });
         const resDet = await ReservationDetail.findOne({ id_reservation: id });
 
         if (!reservation || !reservation.date) {
